@@ -56,13 +56,13 @@ public class PrgState {
     public void setLockTable(ILockTable lockTable) {
         this.lockTable = lockTable;
     }
-//    public String lockTableToString() throws MyException {
-//        StringBuilder lockTableStringBuilder = new StringBuilder();
-//        for (int key: lockTable.keySet()) {
-//            lockTableStringBuilder.append(String.format("%d -> %d\n", key, lockTable.get(key)));
-//        }
-//        return lockTableStringBuilder.toString();
-//    }
+    public String lockTableToString() throws MyException {
+        StringBuilder lockTableStringBuilder = new StringBuilder();
+        for (int key: lockTable.keySet()) {
+            lockTableStringBuilder.append(String.format("%d -> %d\n", key, lockTable.get(key)));
+        }
+        return lockTableStringBuilder.toString();
+    }
 
     IStmt originalProgram;
     public IStmt getOriginalProgram() {

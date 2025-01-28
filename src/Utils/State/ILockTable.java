@@ -5,6 +5,7 @@ import Utils.Exceptions.MyException;
 import java.util.HashMap;
 import java.util.Set;
 
+//this is the lock table interface
 public interface ILockTable {
     int getFreeValue();
     void put(int key, int value) throws MyException;

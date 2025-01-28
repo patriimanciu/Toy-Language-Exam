@@ -4,6 +4,7 @@ import Utils.Exceptions.MyException;
 import java.util.HashMap;
 import java.util.Set;
 
+//this is the lock table
 public class MyLockTable implements ILockTable {
     private HashMap<Integer, Integer> lockTable;
     private int freeLocation = 0;
