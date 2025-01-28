@@ -29,19 +29,19 @@ public class Interpreter {
         TextMenu menu = new TextMenu();
         menu.addCommand(new ExitCommand("0", "exit"));
 
-        try {
-            IStmt p1 = new CompStmt(new VariableDeclStmt("v", new Int()),
-                    new CompStmt(new AssignStmt("v", new ValueExp(new StringValue("2"))),
-                            new PrintStmt(new VariableExpr("v"))));
-            p1.typecheck(new MyDic<>());
-            PrgState prg1 = new PrgState(new MyStack(), new MyDic<>(), new MyDic<>(), new MyHeap<>(), new MyLockTable(), new MyList<>(), p1);
-            IRepo repo1 = new MyRepo(prg1, "log1.txt");
-            Controller ctrl1 = new Controller(repo1);
-            menu.addCommand(new RunCommand("1", p1.toString(), ctrl1));
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            IStmt p1 = new CompStmt(new VariableDeclStmt("v", new Int()),
+//                    new CompStmt(new AssignStmt("v", new ValueExp(new StringValue("2"))),
+//                            new PrintStmt(new VariableExpr("v"))));
+//            p1.typecheck(new MyDic<>());
+//            PrgState prg1 = new PrgState(new MyStack(), new MyDic<>(), new MyDic<>(), new MyHeap<>(), new MyLockTable(), new MyList<>(), p1);
+//            IRepo repo1 = new MyRepo(prg1, "log1.txt");
+//            Controller ctrl1 = new Controller(repo1);
+//            menu.addCommand(new RunCommand("1", p1.toString(), ctrl1));
+//        }
+//        catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
         try {
             IStmt p2 = new CompStmt( new VariableDeclStmt("a",new Int()),
@@ -226,6 +226,23 @@ public class Interpreter {
             Controller ctrl9 = new Controller(repo9);
             menu.addCommand(new RunCommand("9", p9.toString(), ctrl9));
 
+        } catch (MyException e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
+            IStmt p11 = new CompStmt(new VariableDeclStmt("a", new RefType(new Int())),
+                    new CompStmt(new NewStmt("a", new ValueExp(new IntValue(20))),
+                            new CompStmt(new VariableDeclStmt("v", new Int()),
+                                    new CompStmt(new ForStmt("v", new ValueExp(new IntValue(0)), new ValueExp(new IntValue(3)), new ArithExp('+', new VariableExpr("v"), new ValueExp(new IntValue(1))),
+                                            new ForkStmt(new CompStmt(new PrintStmt(new VariableExpr("v")),
+                                                    new AssignStmt("v", new ArithExp('*', new VariableExpr("v"), new rH(new VariableExpr("a"))))))),
+                                            new PrintStmt(new rH(new VariableExpr("a")))))));
+            p11.typecheck(new MyDic<>());
+            PrgState prg11 = new PrgState(new MyStack(), new MyDic<>(), new MyDic<>(), new MyHeap<>(), new MyLockTable(), new MyList<>(), p11);
+            IRepo repo11 = new MyRepo(prg11, "log11.txt");
+            Controller ctrl11 = new Controller(repo11);
+            menu.addCommand(new RunCommand("11", p11.toString(), ctrl11));
         } catch (MyException e) {
             throw new RuntimeException(e);
         }
