@@ -19,6 +19,7 @@ import Utils.Collections.MyStack;
 import Utils.Exceptions.MyException;
 import Utils.State.MyHeap;
 import Utils.State.MyLockTable;
+import Utils.State.SemaphoreTable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -57,7 +58,7 @@ public class ProgramChooserController {
             int id = programsListView.getSelectionModel().getSelectedIndex();
             try {
                 selectedIStmt.typecheck(new MyDic<>());
-                PrgState programState = new PrgState(new MyStack(), new MyDic<>(), new MyDic<>(), new MyHeap<>(), new MyLockTable(), new MyList<>(),  selectedIStmt);
+                PrgState programState = new PrgState(new MyStack(), new MyDic<>(), new MyDic<>(), new MyHeap<>(), new MyLockTable(), new SemaphoreTable(), new MyList<>(),  selectedIStmt);
                 IRepo repository = new MyRepo(programState, "log" + (id + 1) + ".txt");
                 Controller controller = new Controller(repository);
                 programExecutorController.setController(controller);
@@ -203,55 +204,60 @@ public class ProgramChooserController {
                                                 new PrintStmt(new VariableExpr("b")))))));
         allStatements.add(p10);
 
-//        IStmt ex12 = new CompStmt(new VariableDeclStmt("a", new RefType(new Int())),
-//                new CompStmt(new NewStmt("a", new ValueExp(new IntValue(20))),
-//                        new CompStmt(new VariableDeclStmt("v", new Int()),
-//                                new CompStmt(new ForStmt("v", new ValueExp(new IntValue(0)), new ValueExp(new IntValue(3)), new ArithExp('+', new VariableExpr("v"), new ValueExp(new IntValue(1))),
-//                                        new ForkStmt(new CompStmt(new PrintStmt(new VariableExpr("v")),
-//                                                new AssignStmt("v", new ArithExp('*', new VariableExpr("v"), new rH(new VariableExpr("a"))))))),
-//                                        new PrintStmt(new rH(new VariableExpr("a")))))));
-//
-//        allStatements.add(ex12);
-//
-//        IStmt ex13 = new CompStmt(new VariableDeclStmt("v1", new RefType(new Int())),
-//                new CompStmt(new VariableDeclStmt("v2", new RefType(new Int())),
-//                        new CompStmt(new VariableDeclStmt("x", new Int()),
-//                                new CompStmt(new VariableDeclStmt("q", new Int()),
-//                                        new CompStmt(new NewStmt("v1", new ValueExp(new IntValue(20))),
-//                                                new CompStmt(new NewStmt("v2", new ValueExp(new IntValue(30))),
-//                                                        new CompStmt(new NewLockStatement("x"),
-//                                                                new CompStmt(new ForkStmt(
-//                                                                        new CompStmt(new ForkStmt(
-//                                                                                new CompStmt(new LockStatement("x"),
-//                                                                                        new CompStmt(new WriteHeapStmt("v1", new ArithExp('-', new rH(new VariableExpr("v1")), new ValueExp(new IntValue(1)))),
-//                                                                                                new UnlockStatement("x")))
-//                                                                        ),
-//                                                                                new CompStmt(new LockStatement("x"),
-//                                                                                        new CompStmt(new WriteHeapStmt("v1", new ArithExp('*', new rH(new VariableExpr("v1")), new ValueExp(new IntValue(10)))),
-//                                                                                                new UnlockStatement("x"))))
-//                                                                ),
-//                                                                        new CompStmt( new NewLockStatement("q"),
-//                                                                                new CompStmt(new ForkStmt(
-//                                                                                        new CompStmt( new ForkStmt(
-//                                                                                                new CompStmt(new LockStatement("q"),
-//                                                                                                        new CompStmt(new WriteHeapStmt("v2", new ArithExp('+', new rH(new VariableExpr("v2")), new ValueExp(new IntValue(5)))),
-//                                                                                                                new UnlockStatement("q")))
-//                                                                                        ),
-//                                                                                                new CompStmt(new LockStatement("q"),
-//                                                                                                        new CompStmt(new WriteHeapStmt("v2", new ArithExp('*', new rH(new VariableExpr("v2")), new ValueExp(new IntValue(10)))),
-//                                                                                                                new UnlockStatement("q"))))
-//                                                                                ),
-//                                                                                        new CompStmt(new NopStmt(),
-//                                                                                                new CompStmt(new NopStmt(),
-//                                                                                                        new CompStmt(new NopStmt(),
-//                                                                                                                new CompStmt(new NopStmt(),
-//                                                                                                                        new CompStmt(new LockStatement("x"),
-//                                                                                                                                new CompStmt(new PrintStmt(new rH(new VariableExpr("v1"))),
-//                                                                                                                                        new CompStmt(new UnlockStatement("x"),
-//                                                                                                                                                new CompStmt(new LockStatement("q"),
-//                                                                                                                                                        new CompStmt(new PrintStmt(new rH(new VariableExpr("v2"))),
-//                                                                                                                                                                new UnlockStatement("q"))))))))))))))))))));
-//        allStatements.add(ex13);
+        IStmt p11 =
+                new CompStmt(
+                        new VariableDeclStmt("v1", new RefType(new Int())),
+                        new CompStmt(
+                                new VariableDeclStmt("cnt", new Int()),
+                                new CompStmt(
+                                        new NewStmt("v1", new ValueExp(new IntValue(2))),
+                                        new CompStmt(
+                                                new NewSemaphore("cnt", new rH(new VariableExpr("v1")), new ValueExp(new IntValue(1))),
+                                                new CompStmt(
+                                                        new ForkStmt(
+                                                                new CompStmt(
+                                                                        new AcquireSemaphore("cnt"),
+                                                                        new CompStmt(
+                                                                                new WriteHeapStmt("v1", new ArithExp('*', new rH(new VariableExpr("v1")), new ValueExp(new IntValue(10)))),
+                                                                                new CompStmt(
+                                                                                        new PrintStmt(new rH(new VariableExpr("v1"))),
+                                                                                        new ReleaseSemaphore("cnt")
+                                                                                )
+                                                                        )
+
+                                                                )
+                                                        ),
+                                                        new CompStmt(
+                                                                new ForkStmt(
+                                                                        new CompStmt(
+                                                                                new AcquireSemaphore("cnt"),
+                                                                                new CompStmt(
+                                                                                        new WriteHeapStmt("v1", new ArithExp('*', new rH(new VariableExpr("v1")), new ValueExp(new IntValue(10)))),
+                                                                                        new CompStmt(
+                                                                                                new WriteHeapStmt("v1", new ArithExp('*', new rH(new VariableExpr("v1")), new ValueExp(new IntValue(2)))),
+                                                                                                new CompStmt(
+                                                                                                        new PrintStmt(new rH(new VariableExpr("v1"))),
+                                                                                                        new ReleaseSemaphore("cnt")
+                                                                                                )
+                                                                                        )
+                                                                                )
+                                                                        )
+
+                                                                ),
+                                                                new CompStmt(
+                                                                        new AcquireSemaphore("cnt"),
+                                                                        new CompStmt(
+                                                                                new PrintStmt(new ArithExp('-', new rH(new VariableExpr("v1")), new ValueExp(new IntValue(1)))),
+                                                                                new ReleaseSemaphore("cnt")
+                                                                        )
+                                                                )
+                                                        )
+                                                )
+                                        )
+                                )
+                        )
+                );
+        allStatements.add(p11);
 
         return FXCollections.observableArrayList(allStatements);
     }

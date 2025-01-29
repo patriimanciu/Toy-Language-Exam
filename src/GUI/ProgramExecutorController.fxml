@@ -132,6 +132,26 @@
             </VBox>
         </HBox>
         <BorderPane prefHeight="81.0" prefWidth="850.0"/>
+        <HBox alignment="TOP_CENTER" prefHeight="300.0" prefWidth="300.0">
+            <children>
+                <VBox alignment="TOP_CENTER" prefHeight="300.0" prefWidth="300.0">
+                    <children>
+                        <Label text="SemaphoreTable" textFill="#03818f">
+                            <font>
+                                <Font name="0xProto Nerd Font Mono" size="12.0" />
+                            </font>
+                        </Label>
+                        <TableView fx:id="semaphoreTableView" prefHeight="300.0" prefWidth="300.0">
+                            <columns>
+                                <TableColumn fx:id="semaphoreIndexColumn" prefWidth="100.0" text="Index" />
+                                <TableColumn fx:id="semaphoreValueColumn" prefWidth="100.0" text="Value" />
+                                <TableColumn fx:id="semaphoreListColumn" prefWidth="100.0" text="List" />
+                            </columns>
+                        </TableView>
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
         <Button fx:id="runOneStepButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false"
                 onMouseClicked="#runOneStep" prefHeight="40.0" prefWidth="118.0" text="Next step"
                 textAlignment="CENTER" textFill="#028090">

@@ -19,6 +19,7 @@ import Utils.Collections.MyStack;
 import Utils.Exceptions.MyException;
 import Utils.State.MyHeap;
 import Utils.State.MyLockTable;
+import Utils.State.SemaphoreTable;
 import View.Command.ExitCommand;
 import View.Command.RunCommand;
 import View.Command.TextMenu;
@@ -34,7 +35,7 @@ public class Interpreter {
                     new CompStmt(new AssignStmt("v", new ValueExp(new StringValue("2"))),
                             new PrintStmt(new VariableExpr("v"))));
             p1.typecheck(new MyDic<>());
-            PrgState prg1 = new PrgState(new MyStack(), new MyDic<>(), new MyDic<>(), new MyHeap<>(), new MyLockTable(), new MyList<>(), p1);
+            PrgState prg1 = new PrgState(new MyStack(), new MyDic<>(), new MyDic<>(), new MyHeap<>(), new MyLockTable(), new SemaphoreTable(), new MyList<>(), p1);
             IRepo repo1 = new MyRepo(prg1, "log1.txt");
             Controller ctrl1 = new Controller(repo1);
             menu.addCommand(new RunCommand("1", p1.toString(), ctrl1));
@@ -54,7 +55,7 @@ public class Interpreter {
                                             new ArithExp('+',new VariableExpr("a"), new ValueExp(new IntValue(1)))),
                                             new PrintStmt(new VariableExpr("b"))))));
             p2.typecheck(new MyDic<>());
-            PrgState prg2 = new PrgState(new MyStack(), new MyDic<>(), new MyDic<>(), new MyHeap<>(), new MyLockTable(), new MyList<>(), p2);
+            PrgState prg2 = new PrgState(new MyStack(), new MyDic<>(), new MyDic<>(), new MyHeap<>(), new MyLockTable(), new SemaphoreTable(), new MyList<>(), p2);
             IRepo repo2 = new MyRepo(prg2, "log2.txt");
             Controller ctrl2 = new Controller(repo2);
             menu.addCommand(new RunCommand("2", p2.toString(), ctrl2));
@@ -73,7 +74,7 @@ public class Interpreter {
                                             new PrintStmt(new VariableExpr("v"))))));
 
             p3.typecheck(new MyDic<>());
-            PrgState prg3 = new PrgState(new MyStack(), new MyDic<>(), new MyDic<>(), new MyHeap<>(), new MyLockTable(), new MyList<>(), p3);
+            PrgState prg3 = new PrgState(new MyStack(), new MyDic<>(), new MyDic<>(), new MyHeap<>(), new MyLockTable(), new SemaphoreTable(), new MyList<>(), p3);
             IRepo repo3 = new MyRepo(prg3, "log3.txt");
             Controller ctrl3 = new Controller(repo3);
             menu.addCommand(new RunCommand("3", p3.toString(), ctrl3));
@@ -93,7 +94,7 @@ public class Interpreter {
                                                     new PrintStmt(new VariableExpr("a")))))));
 
             p4.typecheck(new MyDic<>());
-            PrgState prg4 = new PrgState(new MyStack(), new MyDic<>(), new MyDic<>(), new MyHeap<>(), new MyLockTable(), new MyList<>(), p4);
+            PrgState prg4 = new PrgState(new MyStack(), new MyDic<>(), new MyDic<>(), new MyHeap<>(), new MyLockTable(), new SemaphoreTable(), new MyList<>(), p4);
             IRepo repo4 = new MyRepo(prg4, "log4.txt");
             Controller ctrl4 = new Controller(repo4);
             menu.addCommand(new RunCommand("4", p4.toString(), ctrl4));
@@ -114,7 +115,7 @@ public class Interpreter {
                                                             new PrintStmt(new rH(new rH(new VariableExpr("a"))))))))));
 
             p5.typecheck(new MyDic<>());
-            PrgState prg5 = new PrgState(new MyStack(), new MyDic<>(), new MyDic<>(), new MyHeap<>(), new MyLockTable(), new MyList<>(), p5);
+            PrgState prg5 = new PrgState(new MyStack(), new MyDic<>(), new MyDic<>(), new MyHeap<>(), new MyLockTable(), new SemaphoreTable(), new MyList<>(), p5);
             IRepo repo5 = new MyRepo(prg5, "log5.txt");
             Controller ctrl5 = new Controller(repo5);
             menu.addCommand(new RunCommand("5", p5.toString(), ctrl5));
@@ -131,7 +132,7 @@ public class Interpreter {
                             '+',new rH(new VariableExpr("v")),new ValueExp(new IntValue(5))))))));
 
             p6.typecheck(new MyDic<>());
-            PrgState prg6 = new PrgState(new MyStack(), new MyDic<>(), new MyDic<>(), new MyHeap<>(), new MyLockTable(), new MyList<>(), p6);
+            PrgState prg6 = new PrgState(new MyStack(), new MyDic<>(), new MyDic<>(), new MyHeap<>(), new MyLockTable(), new SemaphoreTable(), new MyList<>(), p6);
             IRepo repo6 = new MyRepo(prg6, "log6.txt");
             Controller ctrl6 = new Controller(repo6);
             menu.addCommand(new RunCommand("6", p6.toString(), ctrl6));
@@ -159,7 +160,7 @@ public class Interpreter {
                     )
             );
             p7.typecheck(new MyDic<>());
-            PrgState prg7 = new PrgState(new MyStack(), new MyDic<>(), new MyDic<>(), new MyHeap<>(), new MyLockTable(), new MyList<>(), p7);
+            PrgState prg7 = new PrgState(new MyStack(), new MyDic<>(), new MyDic<>(), new MyHeap<>(), new MyLockTable(), new SemaphoreTable(), new MyList<>(), p7);
             IRepo repo7 = new MyRepo(prg7, "log7.txt");
             Controller ctrl7 = new Controller(repo7);
             menu.addCommand(new RunCommand("7", p7.toString(), ctrl7));
@@ -201,7 +202,7 @@ public class Interpreter {
                     )
             );
             p8.typecheck(new MyDic<>());
-            PrgState prg8 = new PrgState(new MyStack(), new MyDic<>(), new MyDic<>(), new MyHeap<>(), new MyLockTable(), new MyList<>(), p8);
+            PrgState prg8 = new PrgState(new MyStack(), new MyDic<>(), new MyDic<>(), new MyHeap<>(), new MyLockTable(), new SemaphoreTable(), new MyList<>(), p8);
             IRepo repo8 = new MyRepo(prg8, "log8.txt");
             Controller ctrl8 = new Controller(repo8);
             menu.addCommand(new RunCommand("8", p8.toString(), ctrl8));
@@ -221,7 +222,7 @@ public class Interpreter {
                                                                     new CompStmt(new PrintStmt(new VariableExpr("varc")),
                                                                             new CloseRFile(new VariableExpr("varf"))))))))));
             p9.typecheck(new MyDic<>());
-            PrgState prg9 = new PrgState(new MyStack(), new MyDic<>(), new MyDic<>(), new MyHeap<>(), new MyLockTable(), new MyList<>(), p9);
+            PrgState prg9 = new PrgState(new MyStack(), new MyDic<>(), new MyDic<>(), new MyHeap<>(), new MyLockTable(), new SemaphoreTable(), new MyList<>(), p9);
             IRepo repo9 = new MyRepo(prg9, "log9.txt");
             Controller ctrl9 = new Controller(repo9);
             menu.addCommand(new RunCommand("9", p9.toString(), ctrl9));

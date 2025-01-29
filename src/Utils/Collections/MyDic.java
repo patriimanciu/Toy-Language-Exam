@@ -14,7 +14,7 @@ public class MyDic<K, V> implements MyIDic<K, V>{
     }
 
     @Override
-    public void put(K key, V value) {
+    public void put(K key, V value) throws MyException {
         dic.put(key, value);
     }
 
