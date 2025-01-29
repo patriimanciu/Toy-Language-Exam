@@ -5,6 +5,7 @@ import Model.Types.Type;
 import Model.Values.Value;
 import Utils.Collections.MyDic;
 import Utils.Collections.MyIDic;
+import Utils.Collections.MyIStack;
 import Utils.Collections.MyStack;
 import Utils.Exceptions.MyException;
 import Utils.State.MyHeap;
@@ -20,13 +21,13 @@ public class ForkStmt implements IStmt{
     }
     @Override
     public PrgState execute(PrgState state) throws MyException {
-        MyStack newStack = new MyStack();
-//        newStack.push(statement);
+        MyStack<IStmt> newStack = new MyStack<>();
+        newStack.push(statement);
         MyIDic<String, Value> newSymTable = new MyDic<>();
         for (Map.Entry<String, Value> entry: state.getSymTable().getMap().entrySet()) {
             newSymTable.put(entry.getKey(), entry.getValue());
         }
-        return new PrgState(newStack, newSymTable, state.getFileTable(), (MyHeap<Value>) state.getMyHeapTable(), (MyLockTable) state.getLockTable(), state.getOut(), statement);
+        return new PrgState(newStack, newSymTable, state.getFileTable(), (MyHeap<Value>) state.getMyHeapTable(), (MyLockTable) state.getLockTable(), state.getProcedureTable(), state.getOut());
     }
 
     @Override

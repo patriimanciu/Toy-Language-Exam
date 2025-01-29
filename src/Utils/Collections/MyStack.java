@@ -22,6 +22,10 @@ public class MyStack<T> implements MyIStack<T> {
         return stack.pop();
     }
 
+    public T peek() {
+        return this.stack.peek();
+    }
+
     @Override
     public boolean isEmpty() {
         return stack.isEmpty();

@@ -24,12 +24,20 @@ public class PrgState {
         this.exeStack = exeStack;
     }
 
-    private MyIDic<String, Value> symTable;
+//    private MyIDic<String, Value> symTable;
+//    public MyIDic<String, Value> getSymTable() {
+//        return (MyIDic<String, Value>) symTable;
+//    }
+//    public void setSymTable(MyIDic<String, Value> symTable) {
+//        this.symTable = symTable;
+//    }
+    private MyIStack<MyIDic <String, Value>> symTables;
     public MyIDic<String, Value> getSymTable() {
-        return (MyIDic<String, Value>) symTable;
+        return symTables.peek();
     }
-    public void setSymTable(MyIDic<String, Value> symTable) {
-        this.symTable = symTable;
+
+    public MyIStack<MyIDic<String, Value>> getAllSymTables() {
+        return symTables;
     }
 
     private MyList<Value> out;
@@ -64,6 +72,14 @@ public class PrgState {
 //        return lockTableStringBuilder.toString();
 //    }
 
+    private MyIProcedureTable procedureTable;
+    public MyIProcedureTable getProcedureTable() {
+        return procedureTable;
+    }
+    public void setProcedureTable(MyIProcedureTable procedureTable) {
+        this.procedureTable = procedureTable;
+    }
+
     IStmt originalProgram;
     public IStmt getOriginalProgram() {
         return originalProgram;
@@ -92,26 +108,42 @@ public class PrgState {
     }
 
     private MyIDic<String, BufferedReader> fileTable;
-    public PrgState(MyStack stk, MyIDic<String, Value> symtbl, MyIDic<String, BufferedReader> filetbl,
-                    MyHeap<Value> heapTable, MyLockTable myLockTable, MyList<Value> ot, IStmt prg) {
+    public PrgState(MyStack<IStmt> stk, MyIDic<String, Value> symtbl, MyIDic<String, BufferedReader> filetbl,
+                    MyHeap<Value> heapTable, MyLockTable myLockTable,  MyIProcedureTable myProcedureTable, MyList<Value> ot, IStmt prg) {
         exeStack = stk;
-        symTable = symtbl;
+        this.symTables = new MySymTblStack();
+        this.symTables.push(symtbl);
         fileTable = filetbl;
         myHeapTable = heapTable;
         lockTable = myLockTable;
+        procedureTable = myProcedureTable;
         out = ot;
         originalProgram = prg;
         stk.push(prg);
         ID = setID();
     }
 
+    public PrgState(MyStack<IStmt> stk, MyIDic<String, Value> symtbl, MyIDic<String, BufferedReader> filetbl,
+                    MyHeap<Value> heapTable, MyLockTable myLockTable,  MyIProcedureTable myProcedureTable, MyList<Value> ot) {
+        exeStack = stk;
+        this.symTables = new MySymTblStack();
+        this.symTables.push(symtbl);
+        fileTable = filetbl;
+        myHeapTable = heapTable;
+        lockTable = myLockTable;
+        procedureTable = myProcedureTable;
+        out = ot;
+        ID = setID();
+    }
+
     public String toString() {
         return "----------------------------------------------- \n ID: " + ID + "\n ExeStack: " + distinctStatamentsString() +
-                "\n SymTable: " + symTable.toString() +
+                "\n SymTable: " + symTables.toString() +
                 "\n Out: " + out.toString() +
                 "\n FileTable: " + getFileTableList() +
                 "\n Heap: " + getMyHeapTable() +
                 "\n Lock Table:\n" + lockTable.toString() +
+                "\nProcedure Table:\n" + procedureTable.toString() +
                 "\n----------------------------------------------- \n";
     }
 
@@ -128,22 +160,51 @@ public class PrgState {
         return result.toString();
     }
 
-    public String getSymTableList(){
-        // return a string with the list of variables from the symbol table, each on a new line
-        StringBuilder result = new StringBuilder();
-        for (String key : symTable.getKeys()) {
-            result.append(key).append(symTable.lookUp(key)).append("\n");
+    public String symTablesToString() throws MyException {
+        StringBuilder returnString = new StringBuilder();
+        if (symTables.isEmpty())
+            return returnString.toString() + '\n';
+
+        MyStack<MyIDic<String, Value>> stackCopy = new MyStack<>();
+        while (!symTables.isEmpty()) {
+            if (symTables.peek() instanceof IStmt)
+                returnString.append((symTables.peek()).toString()).append('\n');
+            else
+                returnString.append(symTables.peek().toString()).append('\n');
+            stackCopy.push(symTables.pop());
         }
-        return result.toString();
+
+        while (!stackCopy.isEmpty()) {
+            symTables.push(stackCopy.pop());
+        }
+
+        return returnString.toString();
     }
 
-    public String getOutList(){
-        // return a string with the list of values from the output list, each on a new line
-        StringBuilder result = new StringBuilder();
-        for (Value value : out.toList()) {
-            result.append(value.toString()).append("\n");
+//    public String getSymTableList(){
+//        // return a string with the list of variables from the symbol table, each on a new line
+//        StringBuilder result = new StringBuilder();
+//        for (String key : symTable.getKeys()) {
+//            result.append(key).append(symTable.lookUp(key)).append("\n");
+//        }
+//        return result.toString();
+//    }
+
+    public String outToString() {
+        StringBuilder outStringBuilder = new StringBuilder();
+        for (Value elem: out.getList()) {
+            outStringBuilder.append(String.format("%s\n", elem.toString()));
         }
-        return result.toString();
+        return outStringBuilder.toString();
+    }
+
+    public String procedureTableToString() throws MyException {
+        StringBuilder procedureTableStringBuilder = new StringBuilder();
+        for (String key: procedureTable.getKeys()) {
+            procedureTableStringBuilder.append(String.format("%s - %s: %s\n", key, procedureTable.lookUp(key).getKey(), procedureTable.lookUp(key).getValue()));
+        }
+        procedureTableStringBuilder.append("\n");
+        return procedureTableStringBuilder.toString();
     }
 
     private Node<IStmt> toTree(IStmt stmt) {

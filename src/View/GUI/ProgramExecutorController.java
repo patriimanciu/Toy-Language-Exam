@@ -2,10 +2,12 @@ package View.GUI;
 
 import Controller.Controller;
 import Model.ProgramState.PrgState;
+import Model.Stmt.IStmt;
 import Model.Values.Value;
 import Utils.Collections.MyIDic;
 import Utils.Exceptions.MyException;
 import Utils.State.IHeap;
+import Utils.State.MyIProcedureTable;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -67,6 +69,15 @@ public class ProgramExecutorController {
     private ListView<String> executionStackListView;
 
     @FXML
+    private TableView<Pair<String, String>> procedureTableView;
+
+    @FXML
+    private TableColumn<Pair<String, String>, String>  procedureNameColumn;
+
+    @FXML
+    private TableColumn<Pair<String, String>, String> procedureBodyColumn;
+
+    @FXML
     private Button runOneStepButton;
 
     public void setController(Controller controller) {
@@ -81,6 +92,8 @@ public class ProgramExecutorController {
         valueColumn.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().second.toString()));
         variableNameColumn.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().first));
         variableValueColumn.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().second.toString()));
+        procedureNameColumn.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().first.toString()));
+        procedureBodyColumn.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().second.toString()));
     }
 
     private PrgState getCurrentProgramState() {
@@ -102,6 +115,7 @@ public class ProgramExecutorController {
         populateProgramStateIdentifiersListView();
         populateSymbolTableView();
         populateExecutionStackListView();
+        populateProcedureTableView();
     }
 
     @FXML
@@ -167,6 +181,16 @@ public class ProgramExecutorController {
                 executionStackToString.add(statement.toString());
             }
         executionStackListView.setItems(FXCollections.observableList(executionStackToString));
+    }
+
+    private void populateProcedureTableView() {
+        PrgState programState = getCurrentProgramState();
+        MyIProcedureTable procedureTable = Objects.requireNonNull(programState).getProcedureTable();
+        ArrayList<Pair<String, String>> procedureTableEntries = new ArrayList<>();
+        for(Map.Entry<String, javafx.util.Pair<List<String>, IStmt>> entry: procedureTable.getMap().entrySet()) {
+            procedureTableEntries.add(new Pair<>((entry.getKey() + " " + entry.getValue().getKey()), entry.getValue().getValue().toString()));
+        }
+        procedureTableView.setItems(FXCollections.observableArrayList(procedureTableEntries));
     }
 
     @FXML
