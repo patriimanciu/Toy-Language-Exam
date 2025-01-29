@@ -49,20 +49,13 @@ public class PrgState {
         this.myHeapTable = myHeapTable;
     }
 
-    public ILockTable lockTable;
+    private ILockTable lockTable;
     public ILockTable getLockTable() {
         return lockTable;
     }
     public void setLockTable(ILockTable lockTable) {
         this.lockTable = lockTable;
     }
-//    public String lockTableToString() throws MyException {
-//        StringBuilder lockTableStringBuilder = new StringBuilder();
-//        for (int key: lockTable.keySet()) {
-//            lockTableStringBuilder.append(String.format("%d -> %d\n", key, lockTable.get(key)));
-//        }
-//        return lockTableStringBuilder.toString();
-//    }
 
     IStmt originalProgram;
     public IStmt getOriginalProgram() {
@@ -144,6 +137,14 @@ public class PrgState {
             result.append(value.toString()).append("\n");
         }
         return result.toString();
+    }
+
+    public String lockTableToString() throws MyException {
+        StringBuilder lockTableStringBuilder = new StringBuilder();
+        for (int key: lockTable.keySet()) {
+            lockTableStringBuilder.append(String.format("%d -> %d\n", key, lockTable.get(key)));
+        }
+        return lockTableStringBuilder.toString();
     }
 
     private Node<IStmt> toTree(IStmt stmt) {

@@ -22,7 +22,7 @@ public class MyLockTable implements ILockTable {
 
     @Override
     public void put(int key, int value) throws MyException {
-        synchronized (this) {
+        synchronized (lockTable) {
             if (!lockTable.containsKey(key)) {
                 lockTable.put(key, value);
             } else {
@@ -33,21 +33,21 @@ public class MyLockTable implements ILockTable {
 
     @Override
     public HashMap<Integer, Integer> getContent() {
-        synchronized (this) {
+        synchronized (lockTable) {
             return lockTable;
         }
     }
 
     @Override
     public boolean containsKey(int position) {
-        synchronized (this) {
+        synchronized (lockTable) {
             return lockTable.containsKey(position);
         }
     }
 
     @Override
     public int get(int position) throws MyException {
-        synchronized (this) {
+        synchronized (lockTable) {
             if (!lockTable.containsKey(position))
                 throw new MyException(String.format("%d is not present in the table!", position));
             return lockTable.get(position);
@@ -56,7 +56,7 @@ public class MyLockTable implements ILockTable {
 
     @Override
     public void update(int position, int value) throws MyException {
-        synchronized (this) {
+        synchronized (lockTable) {
             if (lockTable.containsKey(position)) {
                 lockTable.replace(position, value);
             } else {
@@ -67,7 +67,7 @@ public class MyLockTable implements ILockTable {
 
     @Override
     public void setContent(HashMap<Integer, Integer> newMap) {
-        synchronized (this) {
+        synchronized (lockTable) {
             this.lockTable = newMap;
         }
     }

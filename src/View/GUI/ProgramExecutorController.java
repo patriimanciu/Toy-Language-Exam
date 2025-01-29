@@ -2,10 +2,12 @@ package View.GUI;
 
 import Controller.Controller;
 import Model.ProgramState.PrgState;
+import Model.Stmt.IStmt;
 import Model.Values.Value;
 import Utils.Collections.MyIDic;
 import Utils.Exceptions.MyException;
 import Utils.State.IHeap;
+import Utils.State.ILockTable;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -67,6 +69,16 @@ public class ProgramExecutorController {
     private ListView<String> executionStackListView;
 
     @FXML
+    private TableView<Pair<Integer, Integer>> lockTableView;
+
+    @FXML
+    private TableColumn<Pair<Integer, Integer>, String> locationColumn;
+
+    @FXML
+    private TableColumn<Pair<Integer, Integer>, String> lockValueColumn;
+
+
+    @FXML
     private Button runOneStepButton;
 
     public void setController(Controller controller) {
@@ -81,6 +93,8 @@ public class ProgramExecutorController {
         valueColumn.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().second.toString()));
         variableNameColumn.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().first));
         variableValueColumn.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().second.toString()));
+        locationColumn.setCellValueFactory(p->new SimpleStringProperty(p.getValue().first.toString()));
+        lockValueColumn.setCellValueFactory(p->new SimpleStringProperty(p.getValue().second.toString()));
     }
 
     private PrgState getCurrentProgramState() {
@@ -89,7 +103,7 @@ public class ProgramExecutorController {
         else {
             int currentId = programStateIdentifiersListView.getSelectionModel().getSelectedIndex();
             if (currentId == -1)
-                return controller.getProgramStates().getFirst();
+                return controller.getProgramStates().get(0);
             else
                 return controller.getProgramStates().get(currentId);
         }
@@ -102,6 +116,16 @@ public class ProgramExecutorController {
         populateProgramStateIdentifiersListView();
         populateSymbolTableView();
         populateExecutionStackListView();
+        populateLockTableView();
+    }
+
+    private void populateLockTableView() {
+        PrgState prgState = getCurrentProgramState();
+        ILockTable lockTable = Objects.requireNonNull(prgState).getLockTable();
+        ArrayList<Pair<Integer, Integer>> lockTableEntries = new ArrayList<>();
+        for(Map.Entry<Integer, Integer> entry: lockTable.getContent().entrySet())
+            lockTableEntries.add(new Pair<>(entry.getKey(), entry.getValue()));
+        lockTableView.setItems(FXCollections.observableArrayList(lockTableEntries));
     }
 
     @FXML
@@ -111,8 +135,7 @@ public class ProgramExecutorController {
     }
 
     private void populateNumberOfProgramStatesTextField() {
-        List<PrgState> programStates = controller.getProgramStates();
-        numberOfProgramStatesTextField.setText(String.valueOf(programStates.size()));
+        numberOfProgramStatesTextField.setText(String.valueOf(controller.getProgramStates().size()));
     }
 
     private void populateHeapTableView() {

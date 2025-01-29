@@ -203,55 +203,125 @@ public class ProgramChooserController {
                                                 new PrintStmt(new VariableExpr("b")))))));
         allStatements.add(p10);
 
-//        IStmt ex12 = new CompStmt(new VariableDeclStmt("a", new RefType(new Int())),
-//                new CompStmt(new NewStmt("a", new ValueExp(new IntValue(20))),
-//                        new CompStmt(new VariableDeclStmt("v", new Int()),
-//                                new CompStmt(new ForStmt("v", new ValueExp(new IntValue(0)), new ValueExp(new IntValue(3)), new ArithExp('+', new VariableExpr("v"), new ValueExp(new IntValue(1))),
-//                                        new ForkStmt(new CompStmt(new PrintStmt(new VariableExpr("v")),
-//                                                new AssignStmt("v", new ArithExp('*', new VariableExpr("v"), new rH(new VariableExpr("a"))))))),
-//                                        new PrintStmt(new rH(new VariableExpr("a")))))));
-//
-//        allStatements.add(ex12);
-//
-//        IStmt ex13 = new CompStmt(new VariableDeclStmt("v1", new RefType(new Int())),
-//                new CompStmt(new VariableDeclStmt("v2", new RefType(new Int())),
-//                        new CompStmt(new VariableDeclStmt("x", new Int()),
-//                                new CompStmt(new VariableDeclStmt("q", new Int()),
-//                                        new CompStmt(new NewStmt("v1", new ValueExp(new IntValue(20))),
-//                                                new CompStmt(new NewStmt("v2", new ValueExp(new IntValue(30))),
-//                                                        new CompStmt(new NewLockStatement("x"),
-//                                                                new CompStmt(new ForkStmt(
-//                                                                        new CompStmt(new ForkStmt(
-//                                                                                new CompStmt(new LockStatement("x"),
-//                                                                                        new CompStmt(new WriteHeapStmt("v1", new ArithExp('-', new rH(new VariableExpr("v1")), new ValueExp(new IntValue(1)))),
-//                                                                                                new UnlockStatement("x")))
-//                                                                        ),
-//                                                                                new CompStmt(new LockStatement("x"),
-//                                                                                        new CompStmt(new WriteHeapStmt("v1", new ArithExp('*', new rH(new VariableExpr("v1")), new ValueExp(new IntValue(10)))),
-//                                                                                                new UnlockStatement("x"))))
-//                                                                ),
-//                                                                        new CompStmt( new NewLockStatement("q"),
-//                                                                                new CompStmt(new ForkStmt(
-//                                                                                        new CompStmt( new ForkStmt(
-//                                                                                                new CompStmt(new LockStatement("q"),
-//                                                                                                        new CompStmt(new WriteHeapStmt("v2", new ArithExp('+', new rH(new VariableExpr("v2")), new ValueExp(new IntValue(5)))),
-//                                                                                                                new UnlockStatement("q")))
-//                                                                                        ),
-//                                                                                                new CompStmt(new LockStatement("q"),
-//                                                                                                        new CompStmt(new WriteHeapStmt("v2", new ArithExp('*', new rH(new VariableExpr("v2")), new ValueExp(new IntValue(10)))),
-//                                                                                                                new UnlockStatement("q"))))
-//                                                                                ),
-//                                                                                        new CompStmt(new NopStmt(),
-//                                                                                                new CompStmt(new NopStmt(),
-//                                                                                                        new CompStmt(new NopStmt(),
-//                                                                                                                new CompStmt(new NopStmt(),
-//                                                                                                                        new CompStmt(new LockStatement("x"),
-//                                                                                                                                new CompStmt(new PrintStmt(new rH(new VariableExpr("v1"))),
-//                                                                                                                                        new CompStmt(new UnlockStatement("x"),
-//                                                                                                                                                new CompStmt(new LockStatement("q"),
-//                                                                                                                                                        new CompStmt(new PrintStmt(new rH(new VariableExpr("v2"))),
-//                                                                                                                                                                new UnlockStatement("q"))))))))))))))))))));
-//        allStatements.add(ex13);
+        //Ref int v1; Ref int v2; int x; int q; new(v1,20);new(v2,30);newLock(x);
+        // fork( fork( lock(x);wh(v1,rh(v1)-1);unlock(x) ); lock(x);wh(v1,rh(v1)*10);unlock(x) );newLock(q);
+        // fork( fork(lock(q);wh(v2,rh(v2)+5);unlock(q)); lock(q);wh(v2,rh(v2)*10);unlock(q) );
+        // nop;nop;nop;nop; lock(x); print(rh(v1)); unlock(x); lock(q); print(rh(v2)); unlock(q);
+        IStmt ex12 = new CompStmt(
+                new VariableDeclStmt("v1", new RefType(new Int())),
+                new CompStmt(
+                        new VariableDeclStmt("v2", new RefType(new Int())),
+                        new CompStmt(
+                                new VariableDeclStmt("x", new Int()),
+                                new CompStmt(
+                                        new VariableDeclStmt("q", new Int()),
+                                        new CompStmt(
+                                                new NewStmt("v1", new ValueExp(new IntValue(20))),
+                                                new CompStmt(
+                                                        new NewStmt("v2", new ValueExp(new IntValue(30))),
+                                                        new CompStmt(
+                                                                new NewLockStmt("x"),
+                                                                new CompStmt(
+                                                                        new ForkStmt(
+                                                                                new CompStmt(
+                                                                                        new ForkStmt(
+                                                                                                new CompStmt(
+                                                                                                        new LockStmt("x"),
+                                                                                                        new CompStmt(
+                                                                                                                new WriteHeapStmt("v1",
+                                                                                                                        new ArithExp('-',
+                                                                                                                                new rH(new VariableExpr("v1")),
+                                                                                                                                new ValueExp(new IntValue(1)))),
+                                                                                                                new UnlockStmt("x")
+                                                                                                        )
+                                                                                                )
+                                                                                        ),
+                                                                                        new CompStmt(
+                                                                                                new LockStmt("x"),
+                                                                                                new CompStmt(
+                                                                                                        new WriteHeapStmt("v1",
+                                                                                                                new ArithExp('*',
+                                                                                                                        new rH(new VariableExpr("v1")),
+                                                                                                                        new ValueExp(new IntValue(10))
+                                                                                                                )
+                                                                                                        ),
+                                                                                                        new UnlockStmt("x")
+                                                                                                )
+                                                                                        )
+                                                                                )
+                                                                        ),
+                                                                        new CompStmt(
+                                                                                new NewLockStmt("q"),
+                                                                                new CompStmt(
+                                                                                        new ForkStmt(
+                                                                                                new CompStmt(
+                                                                                                        new ForkStmt(
+                                                                                                                new CompStmt(
+                                                                                                                        new LockStmt("q"),
+                                                                                                                        new CompStmt(
+                                                                                                                                new WriteHeapStmt("v2",
+                                                                                                                                        new ArithExp('+',
+                                                                                                                                                new rH(new VariableExpr("v2")),
+                                                                                                                                                new ValueExp(new IntValue(5))
+                                                                                                                                        )
+                                                                                                                                ),
+                                                                                                                                new UnlockStmt("q")
+                                                                                                                        )
+                                                                                                                )
+                                                                                                        ),
+                                                                                                        new CompStmt(
+                                                                                                                new LockStmt("q"),
+                                                                                                                new CompStmt(
+                                                                                                                        new WriteHeapStmt("v2",
+                                                                                                                                new ArithExp('*',
+                                                                                                                                        new rH(new VariableExpr("v2")),
+                                                                                                                                        new ValueExp(new IntValue(10))
+                                                                                                                                )
+                                                                                                                        ),
+                                                                                                                        new UnlockStmt("q")
+                                                                                                                )
+                                                                                                        )
+                                                                                                )
+                                                                                        ),
+                                                                                        new CompStmt(
+                                                                                                new NopStmt(),
+                                                                                                new CompStmt(
+                                                                                                        new NopStmt(),
+                                                                                                        new CompStmt(
+                                                                                                                new NopStmt(),
+                                                                                                                new CompStmt(
+                                                                                                                        new NopStmt(),
+                                                                                                                        new CompStmt(
+                                                                                                                                new LockStmt("x"),
+                                                                                                                                new CompStmt(
+                                                                                                                                        new PrintStmt(new rH(new VariableExpr("v1"))),
+                                                                                                                                        new CompStmt(
+                                                                                                                                                new UnlockStmt("x"),
+                                                                                                                                                new CompStmt(
+                                                                                                                                                        new LockStmt("q"),
+                                                                                                                                                        new CompStmt(
+                                                                                                                                                                new PrintStmt(new rH(new VariableExpr("v2"))),
+                                                                                                                                                                new UnlockStmt("q")
+                                                                                                                                                        )
+                                                                                                                                                )
+                                                                                                                                        )
+                                                                                                                                )
+                                                                                                                        )
+                                                                                                                )
+                                                                                                        )
+                                                                                                )
+                                                                                        )
+                                                                                )
+                                                                        )
+                                                                )
+                                                        )
+                                                )
+                                        )
+                                )
+                        )
+                )
+        );
+        allStatements.add(ex12);
 
         return FXCollections.observableArrayList(allStatements);
     }
