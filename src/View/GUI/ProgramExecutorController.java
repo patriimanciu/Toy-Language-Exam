@@ -4,6 +4,7 @@ import Controller.Controller;
 import Model.ProgramState.PrgState;
 import Model.Values.Value;
 import Utils.Collections.MyIDic;
+import Utils.Collections.MyISemaphoreTable;
 import Utils.Exceptions.MyException;
 import Utils.State.IHeap;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -69,6 +70,17 @@ public class ProgramExecutorController {
     @FXML
     private Button runOneStepButton;
 
+    @FXML
+    private TableView<Pair<Integer, Pair<Integer, List<Integer>>>> semaphoreTableView;
+
+    @FXML
+    private TableColumn<Pair<Integer, Pair<Integer, List<Integer>>>, Integer> semaphoreIndexColumn;
+
+    @FXML
+    private TableColumn<Pair<Integer, Pair<Integer, List<Integer>>>, Integer> semaphoreValueColumn;
+    @FXML
+    private TableColumn<Pair<Integer, Pair<Integer, List<Integer>>>, String> semaphoreListColumn;
+
     public void setController(Controller controller) {
         this.controller = controller;
         populate();
@@ -81,6 +93,9 @@ public class ProgramExecutorController {
         valueColumn.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().second.toString()));
         variableNameColumn.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().first));
         variableValueColumn.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().second.toString()));
+        semaphoreIndexColumn.setCellValueFactory(p -> new SimpleIntegerProperty(p.getValue().first).asObject());
+        semaphoreValueColumn.setCellValueFactory(p -> new SimpleIntegerProperty(p.getValue().second.first).asObject());
+        semaphoreListColumn.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().second.second.toString()));
     }
 
     private PrgState getCurrentProgramState() {
@@ -102,6 +117,7 @@ public class ProgramExecutorController {
         populateProgramStateIdentifiersListView();
         populateSymbolTableView();
         populateExecutionStackListView();
+        populateSemaphoreTableView();
     }
 
     @FXML
@@ -167,6 +183,16 @@ public class ProgramExecutorController {
                 executionStackToString.add(statement.toString());
             }
         executionStackListView.setItems(FXCollections.observableList(executionStackToString));
+    }
+
+    private void populateSemaphoreTableView() {
+        PrgState programState = getCurrentProgramState();
+        MyISemaphoreTable semaphoreTable = Objects.requireNonNull(programState).getSemaphoreTable();
+        ArrayList<Pair<Integer, Pair<Integer, List<Integer>>>> semaphoreTableEntries = new ArrayList<>();
+        for(Map.Entry<Integer, javafx.util.Pair<Integer, List<Integer>>> entry: semaphoreTable.getMap().entrySet()) {
+            semaphoreTableEntries.add(new Pair<>(entry.getKey(), new Pair<>(entry.getValue().getKey(), entry.getValue().getValue())));
+        }
+        semaphoreTableView.setItems(FXCollections.observableArrayList(semaphoreTableEntries));
     }
 
     @FXML

@@ -12,6 +12,8 @@ import java.io.BufferedReader;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class PrgState {
     private int ID;
@@ -64,6 +66,15 @@ public class PrgState {
 //        return lockTableStringBuilder.toString();
 //    }
 
+    private MyISemaphoreTable semaphoreTable;
+    static public Lock semaphoreLock = new ReentrantLock();
+    public void setSemaphoreTable(MyISemaphoreTable semaphoreTable) {
+        this.semaphoreTable = semaphoreTable;
+    }
+    public MyISemaphoreTable getSemaphoreTable() {
+        return semaphoreTable;
+    }
+
     IStmt originalProgram;
     public IStmt getOriginalProgram() {
         return originalProgram;
@@ -93,12 +104,13 @@ public class PrgState {
 
     private MyIDic<String, BufferedReader> fileTable;
     public PrgState(MyStack stk, MyIDic<String, Value> symtbl, MyIDic<String, BufferedReader> filetbl,
-                    MyHeap<Value> heapTable, MyLockTable myLockTable, MyList<Value> ot, IStmt prg) {
+                    MyHeap<Value> heapTable, MyLockTable myLockTable, MySemaphoreTable mySemaphoreTable, MyList<Value> ot, IStmt prg) {
         exeStack = stk;
         symTable = symtbl;
         fileTable = filetbl;
         myHeapTable = heapTable;
         lockTable = myLockTable;
+        semaphoreTable = mySemaphoreTable;
         out = ot;
         originalProgram = prg;
         stk.push(prg);
@@ -112,7 +124,8 @@ public class PrgState {
                 "\n FileTable: " + getFileTableList() +
                 "\n Heap: " + getMyHeapTable() +
                 "\n Lock Table:\n" + lockTable.toString() +
-                "\n----------------------------------------------- \n";
+                "\nSemaphore Table:\n" + semaphoreTable.toString() +
+        "\n----------------------------------------------- \n";
     }
 
     public MyIDic<String, BufferedReader> getFileTable() {
@@ -185,5 +198,12 @@ public class PrgState {
         return str.toString();
     }
 
+    public String semaphoreTableToString() throws MyException {
+        StringBuilder semaphoreTableStringBuilder = new StringBuilder();
+        for (int key: semaphoreTable.getKeys()) {
+            semaphoreTableStringBuilder.append(String.format("%d -> %d: %s\n", key, semaphoreTable.lookUp(key).getKey(), semaphoreTable.lookUp(key).getValue().toString()));
+        }
+        return semaphoreTableStringBuilder.toString();
+    }
 
 }

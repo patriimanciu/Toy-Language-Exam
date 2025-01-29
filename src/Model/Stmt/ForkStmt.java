@@ -5,6 +5,7 @@ import Model.Types.Type;
 import Model.Values.Value;
 import Utils.Collections.MyDic;
 import Utils.Collections.MyIDic;
+import Utils.Collections.MySemaphoreTable;
 import Utils.Collections.MyStack;
 import Utils.Exceptions.MyException;
 import Utils.State.MyHeap;
@@ -26,7 +27,7 @@ public class ForkStmt implements IStmt{
         for (Map.Entry<String, Value> entry: state.getSymTable().getMap().entrySet()) {
             newSymTable.put(entry.getKey(), entry.getValue());
         }
-        return new PrgState(newStack, newSymTable, state.getFileTable(), (MyHeap<Value>) state.getMyHeapTable(), (MyLockTable) state.getLockTable(), state.getOut(), statement);
+        return new PrgState(newStack, newSymTable, state.getFileTable(), (MyHeap<Value>) state.getMyHeapTable(), (MyLockTable) state.getLockTable(), (MySemaphoreTable) state.getSemaphoreTable(),state.getOut(), statement);
     }
 
     @Override
