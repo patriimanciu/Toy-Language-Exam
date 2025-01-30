@@ -8,6 +8,7 @@ import Utils.Collections.MyIDic;
 import Utils.Collections.MyStack;
 import Utils.Exceptions.MyException;
 import Utils.State.MyHeap;
+import Utils.State.MyLatchTable;
 import Utils.State.MyLockTable;
 
 import java.util.Map;
@@ -26,7 +27,7 @@ public class ForkStmt implements IStmt{
         for (Map.Entry<String, Value> entry: state.getSymTable().getMap().entrySet()) {
             newSymTable.put(entry.getKey(), entry.getValue());
         }
-        return new PrgState(newStack, newSymTable, state.getFileTable(), (MyHeap<Value>) state.getMyHeapTable(), (MyLockTable) state.getLockTable(), state.getOut(), statement);
+        return new PrgState(newStack, newSymTable, state.getFileTable(), (MyHeap<Value>) state.getMyHeapTable(), (MyLockTable) state.getLockTable(), (MyLatchTable) state.getLatchTable(), state.getOut(), statement);
     }
 
     @Override

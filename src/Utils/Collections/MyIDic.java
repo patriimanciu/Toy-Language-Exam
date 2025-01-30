@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface MyIDic<K,V> {
-    void put(K key, V value);
+    void put(K key, V value) throws MyException;
     V lookUp(K key);
     boolean contains(K key);
     void update(K key, V value);

@@ -6,6 +6,7 @@ import Model.Values.Value;
 import Utils.Collections.MyIDic;
 import Utils.Exceptions.MyException;
 import Utils.State.IHeap;
+import Utils.State.ILatchTable;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -67,6 +68,16 @@ public class ProgramExecutorController {
     private ListView<String> executionStackListView;
 
     @FXML
+    private TableView<Pair<Integer, Integer>> latchTableView;
+
+    @FXML
+    private TableColumn<Pair<Integer, Integer>, String> latchLocationColumn;
+
+    @FXML
+    private TableColumn<Pair<Integer, Integer>, String> latchValueColumn;
+
+
+    @FXML
     private Button runOneStepButton;
 
     public void setController(Controller controller) {
@@ -81,6 +92,9 @@ public class ProgramExecutorController {
         valueColumn.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().second.toString()));
         variableNameColumn.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().first));
         variableValueColumn.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().second.toString()));
+        latchLocationColumn.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().first.toString()));
+        latchValueColumn.setCellValueFactory(p -> new SimpleStringProperty(p.getValue().second.toString()));
+
     }
 
     private PrgState getCurrentProgramState() {
@@ -102,6 +116,17 @@ public class ProgramExecutorController {
         populateProgramStateIdentifiersListView();
         populateSymbolTableView();
         populateExecutionStackListView();
+        populateLatchTableView();
+    }
+
+    private void populateLatchTableView() {
+        PrgState programState = getCurrentProgramState();
+        ILatchTable latchTable = Objects.requireNonNull(programState).getLatchTable();
+        ArrayList<Pair<Integer, Integer>> latchTableEntries = new ArrayList<>();
+        for(Map.Entry<Integer, Integer> entry: latchTable.getMap().entrySet()) {
+            latchTableEntries.add(new Pair<>(entry.getKey(), entry.getValue()));
+        }
+        latchTableView.setItems(FXCollections.observableArrayList(latchTableEntries));
     }
 
     @FXML

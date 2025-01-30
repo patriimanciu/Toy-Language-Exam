@@ -64,6 +64,14 @@ public class PrgState {
 //        return lockTableStringBuilder.toString();
 //    }
 
+    private ILatchTable latchTable;
+    public ILatchTable getLatchTable() {
+        return latchTable;
+    }
+    public void setLatchTable(ILatchTable latchTable) {
+        this.latchTable = latchTable;
+    }
+
     IStmt originalProgram;
     public IStmt getOriginalProgram() {
         return originalProgram;
@@ -93,12 +101,13 @@ public class PrgState {
 
     private MyIDic<String, BufferedReader> fileTable;
     public PrgState(MyStack stk, MyIDic<String, Value> symtbl, MyIDic<String, BufferedReader> filetbl,
-                    MyHeap<Value> heapTable, MyLockTable myLockTable, MyList<Value> ot, IStmt prg) {
+                    MyHeap<Value> heapTable, MyLockTable myLockTable, MyLatchTable myLatchTable, MyList<Value> ot, IStmt prg) {
         exeStack = stk;
         symTable = symtbl;
         fileTable = filetbl;
         myHeapTable = heapTable;
         lockTable = myLockTable;
+        latchTable = myLatchTable;
         out = ot;
         originalProgram = prg;
         stk.push(prg);
@@ -112,6 +121,7 @@ public class PrgState {
                 "\n FileTable: " + getFileTableList() +
                 "\n Heap: " + getMyHeapTable() +
                 "\n Lock Table:\n" + lockTable.toString() +
+                "\n Latch Table:\n" + latchTable.toString() +
                 "\n----------------------------------------------- \n";
     }
 
@@ -185,5 +195,12 @@ public class PrgState {
         return str.toString();
     }
 
+    public String latchTableToString() throws MyException {
+        StringBuilder latchTableStringBuilder = new StringBuilder();
+        for (int key: latchTable.getKeys()) {
+            latchTableStringBuilder.append(String.format("%d -> %d\n", key, latchTable.get(key)));
+        }
+        return latchTableStringBuilder.toString();
+    }
 
 }
